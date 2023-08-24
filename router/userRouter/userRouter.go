@@ -8,8 +8,8 @@ import (
 func UserRouter(r *gin.Engine) {
 	userGroup := r.Group("/user")
 
-	userGroup.POST("/register", userController.Register)
-	userGroup.POST("/login")
-	userGroup.PUT("/:userId")
-	userGroup.DELETE("/:userId")
+	userGroup.POST("/register", userController.UserRegister)
+	userGroup.POST("/login", userController.UserLogin)
+	userGroup.PUT("/:userId", userController.UserUpdate)
+	userGroup.DELETE("/:userId", userController.UserDelete)
 }
