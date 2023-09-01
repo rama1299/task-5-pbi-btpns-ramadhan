@@ -6,37 +6,38 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
+
+var secretKey = []byte(os.Getenv("SECRET_KEY"))
 
 func Authentication() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		err := godotenv.Load()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			return
-		}
-
-		tokenString, err := c.Cookie("token")
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorization"})
+		tokenString, err := c.Cookie("Authorization")
+		if tokenString == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
 
-		SECRET := os.Getenv("JWT-SECRET")
-		JWT_KEY := []byte(SECRET)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.Abort()
+			return
+		}
 
-		token, err := jwt.ParseWithClaims(tokenString, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return JWT_KEY, nil
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			return secretKey, nil
 		})
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
 
+		claims := token.Claims.(jwt.MapClaims)
+		c.Set("userID", int(claims["id"].(float64)))
+		c.Set("username", claims["username"].(string))
 		c.Next()
 	}
 }

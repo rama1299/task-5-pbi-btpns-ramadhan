@@ -4,21 +4,15 @@ import (
 	"fmt"
 	"os"
 
-	"example.com/m/v2/models"
-	"github.com/joho/godotenv"
+	"vix-btpns/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
-func init() {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
-		return
-	}
-
+func ConnectDatabase() error {
 	dbUser := os.Getenv("DB_USER")
 	dbPassword := os.Getenv("DB_PASSWORD")
 	dbName := os.Getenv("DB_NAME")
@@ -29,13 +23,6 @@ func init() {
 
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=%s TimeZone=%s", dbUser, dbPassword, dbName, dbHost, dbPort, dbSSLMode, dbTimezone)
 
-	err = ConnectDatabase(dsn)
-	if err != nil {
-		panic("Failed to connect to database")
-	}
-}
-
-func ConnectDatabase(dsn string) error {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return err
@@ -45,4 +32,5 @@ func ConnectDatabase(dsn string) error {
 
 	DB = db
 	return nil
+
 }

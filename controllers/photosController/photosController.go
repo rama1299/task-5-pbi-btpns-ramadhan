@@ -1,5 +1,0 @@
-package photosController
-
-func FindAll() {
-
-}

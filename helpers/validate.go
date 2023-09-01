@@ -1,6 +1,8 @@
 package helpers
 
-import "github.com/asaskevich/govalidator"
+import (
+	"github.com/asaskevich/govalidator"
+)
 
 func IsEmail(email string) bool {
 	if !govalidator.IsEmail(email) {

@@ -1,27 +1,15 @@
 package app
 
-import (
-	"golang.org/x/crypto/bcrypt"
-)
-
-type UserLogin struct {
+type Login struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-func HashPassword(password string) (string, error) {
-	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-	return string(hashedBytes), nil
+type Update struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
 }
 
-func CheckPassword(password, hashedPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-	if err != nil {
-		return false
-	} else {
-		return true
-	}
+type Password struct {
+	Password string `json:"password"`
 }

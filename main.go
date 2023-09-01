@@ -1,15 +1,34 @@
 package main
 
 import (
-	_ "example.com/m/v2/database"
-	"example.com/m/v2/router/userRouter"
+	"fmt"
+	"log"
+	"os"
+
+	"vix-btpns/database"
+	"vix-btpns/router"
+
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	r := gin.Default()
 
-	userRouter.UserRouter(r)
+	err = database.ConnectDatabase()
+	if err != nil {
+		fmt.Println("Failed connect database")
+	}
 
-	r.Run(":8080")
+	r.Static("/uploads", "./uploads")
+
+	router.UserRouter(r)
+	router.PhotosRouter(r)
+
+	r.Run(":" + os.Getenv("PORT"))
 }
